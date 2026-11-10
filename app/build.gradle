@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.kultrshok.scrubgnome.file'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.kultrshok.scrubgnome.file'
+        minSdk 29          // Android 10+
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Release signing comes from environment variables (set by GitHub Actions from
+    // encrypted repo secrets, or by you locally). The key itself never goes in git.
+    def ksPath = System.getenv("SG_KEYSTORE_PATH")
+    signingConfigs {
+        release {
+            if (ksPath) {
+                storeFile file(ksPath)
+                storePassword System.getenv("SG_KEYSTORE_PASS")
+                keyAlias System.getenv("SG_KEY_ALIAS")
+                keyPassword System.getenv("SG_KEY_PASS")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (ksPath) signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // The app is a thin WebView shell around web/ (the same files the iPhone web app
+    // serves), packaged as assets. Plain Java + Android framework only, no network.
+    sourceSets {
+        main { assets.srcDirs = ['../web'] }
+    }
+}

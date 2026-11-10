@@ -1,0 +1,40 @@
+# Publishes the web/ folder (the Safari/iPhone version) to GitHub Pages.
+# GitHub Pages is free for PUBLIC repos; on a private repo this workflow simply skips.
+# One-time switch: Settings -> Pages -> Source: "GitHub Actions".
+name: Publish web app
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'web/**', 'tools/**', '.github/workflows/pages.yml' ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Self-test the scrubber
+        run: bash tools/selftest.sh
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deployment
+        uses: actions/deploy-pages@v4
