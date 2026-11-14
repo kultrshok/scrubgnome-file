@@ -19,6 +19,8 @@ Scrubgnome-File is the document member of the Scrubgnome family, alongside deskt
 - **Web version for iPhone / any browser** (`web/`): open it in Safari, tap *Share → Add to Home Screen*, and it
   works like an app, even offline. The page's security policy forbids it from sending data anywhere.
 
+**Questions or problems?** See the [FAQ](FAQ.md) and [Bug Fixes](Bug%20Fixes.md).
+
 ---
 
 ## What gets removed

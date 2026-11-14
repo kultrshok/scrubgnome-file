@@ -207,9 +207,11 @@ export async function analyze(blob, onProgress) {
           if (m.type === 'mdhd') await zeroTimes(m, `track ${trackNo} media header`);
           else if (m.type === 'hdlr') handler = await processHdlr(m);
           else if (m.type === 'minf') { for (const mi of await children(m)) if (mi.type === 'stbl') stbl = mi; }
+          else if (m.type === 'free' || m.type === 'skip') await wipeFiller(m, `trak${trackNo}/mdia/${m.type}`);
           else if (!MDIA_KEEP.has(m.type)) await neutralize(m, `trak${trackNo}/mdia/${m.type}`);
         }
-      } else if (!TRAK_KEEP.has(c.type)) await neutralize(c, `trak${trackNo}/${c.type}`);
+      } else if (c.type === 'free' || c.type === 'skip') await wipeFiller(c, `trak${trackNo}/${c.type}`);
+      else if (!TRAK_KEEP.has(c.type)) await neutralize(c, `trak${trackNo}/${c.type}`);
     }
     if (handler && !AV_HANDLERS.has(handler)) {
       const zeroed = stbl ? await wipeSamples(stbl) : 0;
